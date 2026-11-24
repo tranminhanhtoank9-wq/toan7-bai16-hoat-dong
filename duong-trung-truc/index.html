@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toán 7 · Bài 16 · Hoạt động: Đường trung trực của đoạn thẳng</title>
+<style>
+:root{--key:#1b5e20;--or:#b5451b;--ink:#1f2937;--grey:#4b5563;--band:#dcf1d4;--line:#9ccb9f;--bg:#f8fcf5;--ok:#2e7d32;--bad:#b71c1c;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;font-size:18px}
+header{background:var(--band);border-bottom:2px solid var(--line);padding:12px 16px}
+h1{margin:0;font-size:1.25rem;color:var(--key)}
+.sub{margin:2px 0 0;color:var(--grey);font-size:.95rem}
+main{max-width:1000px;margin:0 auto;padding:12px 14px 40px}
+button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.progress{display:flex;align-items:center;gap:10px;margin:10px 0 12px;font-size:.95rem;color:var(--grey)}
+.bar{flex:1;height:12px;background:#e5efe0;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0}
+.card h2{margin:0 0 4px;font-size:1.1rem;color:var(--key)}
+.card .time{color:var(--or);font-weight:700;font-size:.9rem}
+.card.done{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.task{font-weight:700}
+svg{width:100%;height:auto;max-height:420px;background:#fcfffa;border:1px solid #cfe6c9;border-radius:10px;touch-action:none;user-select:none}
+.row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+.row>.fig{flex:1 1 380px;min-width:0}
+.row>.side{flex:1 1 280px;min-width:0}
+.read{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 12px;margin:8px 0;font-size:1rem}
+.read b{color:var(--key)}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:1rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+th{background:var(--band);color:var(--key)}
+.btn{min-height:46px;padding:6px 16px;font:inherit;font-weight:700;border:2px solid var(--key);background:var(--key);color:#fff;border-radius:10px;cursor:pointer}
+.btn.alt{background:#fff;color:var(--key)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.fb{margin:8px 0;padding:8px 12px;border-radius:10px;font-size:1rem;display:none}
+.fb.show{display:block}
+.fb.good{background:#e8f5e9;border:1px solid var(--ok);color:#1b4d1f}
+.fb.hint{background:#fff3e0;border:1px solid #e0a84f;color:#7a3a10}
+.lamp{display:inline-block;min-width:92px;text-align:center;padding:4px 12px;border-radius:999px;font-weight:700;color:#fff;background:#b71c1c}
+.lamp.on{background:#2e7d32}
+.kw{display:inline-block;min-width:150px;min-height:44px;padding:2px 10px;font:inherit;border:2px solid var(--grey);border-radius:8px;background:#fffdf5;margin:2px 4px}
+.kw.wrong{border-color:var(--bad);background:#fdecea}
+.kw.ok{border-color:var(--ok);background:#e8f5e9}
+.stmt{margin:10px 0;padding:10px 12px;border:2px dashed var(--line);border-radius:10px;background:#fcfffa;line-height:2.2}
+ol.order{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px;counter-reset:s}
+ol.order li{display:flex;align-items:center;gap:8px;padding:6px 10px;border:2px solid #cfe6c9;border-radius:10px;background:#fff;counter-increment:s;cursor:grab}
+ol.order li::before{content:counter(s);display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:var(--key);color:#fff;font-weight:700;font-size:.9rem}
+ol.order li .t{flex:1}
+ol.order li button{min-width:44px;min-height:44px;font-size:1.1rem;border:1px solid var(--line);background:#f1f8ee;border-radius:8px;cursor:pointer}
+ol.order li.over{border-color:var(--or);background:#fff7e8}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;padding:8px;border:2px dashed var(--line);border-radius:10px;min-height:56px}
+.chip{min-height:44px;padding:4px 12px;font:inherit;border:2px solid var(--or);background:#fff7e8;color:var(--ink);border-radius:999px;cursor:grab}
+.chip.sel{background:var(--or);color:#fff}
+.proof{margin:8px 0;padding:0;list-style:none;display:grid;gap:8px}
+.proof li{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.blank{min-width:130px;min-height:44px;padding:2px 10px;font:inherit;border:2px dashed var(--grey);background:#fafafa;border-radius:8px;cursor:pointer;color:var(--ink)}
+.blank.full{border-style:solid;border-color:var(--key);background:#e8f5e9}
+.blank.wrong{border-color:var(--bad);background:#fdecea}
+.blank.over{border-color:var(--or)}
+.summary{background:#fff;border:2px solid var(--key);border-radius:12px;padding:14px 16px;margin:18px 0}
+.summary ul{margin:6px 0;padding-left:22px}
+[hidden]{display:none!important}
+.card.done h2::after{content:" ✔ Đã xong";color:var(--ok);font-size:.85rem;font-weight:700}
+#gate{position:fixed;inset:0;background:rgba(27,94,32,.92);display:grid;place-items:center;z-index:10;padding:16px}
+#gate form{background:#fff;border-radius:14px;padding:20px 22px;max-width:460px;width:100%;display:grid;gap:10px}
+#gate h2{margin:0;color:var(--key)}
+#gate label{display:grid;gap:4px;font-weight:700}
+#gate input{min-height:46px;padding:4px 10px;font:inherit;border:2px solid var(--grey);border-radius:8px}
+.who{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;font-size:.95rem}
+.who .btn{min-height:36px;padding:2px 12px;font-size:.9rem}
+.warn{margin:8px 0;padding:8px 12px;border:1px solid #e0a84f;background:#fff3e0;color:#7a3a10;border-radius:10px;font-size:.95rem}
+.sheet{border:2px solid var(--key);border-radius:10px;padding:10px 12px;background:#fcfffa}
+.sheet .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 16px;margin-bottom:6px}
+.sheet td.l{text-align:left}
+.code{font-family:Consolas,monospace;font-weight:700;letter-spacing:2px;color:var(--key)}
+@media print{#gate,.btn,.who{display:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-key="hdh-duong-trung-truc">
+<header><h1>Toán 7 · Bài 16: Đường trung trực của đoạn thẳng (HĐ6)</h1><p class="sub">Khám phá và chứng minh tính chất · nhóm đôi, 1 thiết bị: một bạn thao tác, một bạn ghi chép, đổi vai ở nhiệm vụ tiếp theo.</p><div class="who" id="who" hidden><span id="whoText"></span><button class="btn alt" id="changeWho" type="button">Đổi người làm</button></div></header>
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateT"><form id="gateForm"><h2 id="gateT">Trước khi bắt đầu</h2><p style="margin:0">Nhập tên để lưu bài làm (F5 không mất) và in tên lên bảng kết quả.</p><label>Họ và tên<input id="gName" maxlength="60" autocomplete="off" aria-describedby="gHelp"></label><label>Lớp<input id="gCls" maxlength="12" placeholder="Ví dụ: 7A10" autocomplete="off"></label><p class="sub" id="gHelp" style="margin:0">Làm đôi chung 1 thiết bị: ghi tên cả hai bạn, cách nhau bằng dấu phẩy.</p><button class="btn" type="submit">Bắt đầu làm bài</button><div class="fb" id="gErr" role="alert"></div></form></div>
+<main>
+<div class="warn" id="storeWarn" hidden>Trình duyệt đang chặn lưu bài (thường gặp khi hoạt động nằm trong khung nhúng). Nếu bấm F5 thì bài làm sẽ mất. Hãy <a id="newTab" target="_blank" rel="noopener" href="#">mở hoạt động trong tab mới</a> rồi làm bài ở đó.</div>
+<div id="app" hidden>
+<div class="progress"><span id="progText"></span><div class="bar" aria-hidden="true"><i id="progBar"></i></div></div>
+
+<section class="card" id="B2">
+ <h2>HĐ6 · Nhiệm vụ 1: Dự đoán (chiều thuận) <span class="time">· 5 phút</span></h2>
+ <p class="task"><i>AB</i> cố định, đường trung trực <i>d</i> đã vẽ sẵn. Kéo điểm <i>M</i> trên <i>d</i> đến 3 vị trí khác nhau, mỗi lần bấm “Ghi vào bảng”, rồi điền từ khoá.</p>
+ <div class="row"><div class="fig"><svg id="svgB2" viewBox="0 0 600 400" role="img" aria-label="Điểm M di chuyển trên đường trung trực d của AB"></svg></div>
+ <div class="side"><div class="read" aria-live="polite"><span><i>MA</i> = <b id="b2ma"></b> cm</span><span><i>MB</i> = <b id="b2mb"></b> cm</span></div>
+ <button class="btn" id="b2rec">Ghi vào bảng</button>
+ <table><thead><tr><th>Lần</th><th><i>MA</i> (cm)</th><th><i>MB</i> (cm)</th></tr></thead><tbody id="b2tb"></tbody></table>
+ <div id="b2q" data-gate hidden><p class="stmt">Điểm nằm trên đường trung trực của một đoạn thẳng thì <input class="kw" id="b2in" aria-label="Từ khoá" autocomplete="off"> hai đầu mút của đoạn thẳng đó.</p><button class="btn" id="b2chk">Kiểm tra</button></div>
+ <div class="fb" id="b2fb" role="status"></div></div></div>
+</section>
+<section class="card" id="B3">
+ <h2>HĐ6 · Nhiệm vụ 2: Chiều đảo <span class="time">· 4 phút</span></h2>
+ <p class="task">Kéo điểm <i>M</i> tự do. Khi em nghĩ <i>MA</i> = <i>MB</i>, bấm nút “Đánh dấu điểm M”. Máy sẽ kiểm tra và để lại chấm xanh nếu đúng. Hãy đánh dấu ít nhất 8 điểm đúng, ở nhiều vị trí khác nhau (cả hai phía của <i>AB</i>).</p>
+ <div class="row"><div class="fig"><svg id="svgB3" viewBox="0 0 600 400" role="img" aria-label="Điểm M kéo tự do, các điểm đã đánh dấu"></svg>
+ <button class="btn" id="b3mark">Đánh dấu điểm M</button> <button class="btn alt" id="b3clear">Xóa các chấm</button></div>
+ <div class="side"><div class="read" aria-live="polite"><span><i>MA</i> = <b id="b3ma"></b> cm</span><span><i>MB</i> = <b id="b3mb"></b> cm</span><span>Số chấm đúng: <b id="b3n">0</b>/8</span></div>
+ <div class="fb" id="b3fb0" role="status"></div>
+ <p class="sub" id="b3need" data-gate>Cần ít nhất 8 chấm đúng để mở câu hỏi.</p>
+ <div id="b3q" data-gate hidden><p class="stmt">Các điểm <i>M</i> thỏa mãn <i>MA</i> = <i>MB</i> nằm trên <input class="kw" id="b3in" aria-label="Điền câu trả lời ngắn" autocomplete="off" style="min-width:220px"> của đoạn thẳng <i>AB</i>.</p><button class="btn" id="b3chk">Kiểm tra</button></div>
+ <div class="fb" id="b3fb" role="status"></div></div></div>
+</section>
+<section class="card" id="B4">
+ <h2>Chứng minh chiều thuận <span class="time">· 4 phút</span></h2>
+ <p class="task">Cho đường trung trực <i>d</i> của đoạn thẳng <i>AB</i> (<i>d</i> ⊥ <i>AB</i> tại trung điểm <i>O</i>) và điểm <i>M</i> bất kì trên <i>d</i>. Chứng minh <i>MA</i> = <i>MB</i>: kéo thẻ vào ô trống đúng (hoặc bấm thẻ rồi bấm ô trống).</p>
+ <div class="row"><div class="fig"><svg id="svgB4" viewBox="0 0 600 400" role="img" aria-label="Điểm M trên đường trung trực d của AB"></svg></div>
+ <div class="side"><div class="bank" id="b4bank" aria-label="Kho thẻ"></div><ul class="proof" id="b4proof"></ul><button class="btn" id="b4chk">Kiểm tra</button><div class="fb" id="b4fb" role="status"></div></div></div>
+</section>
+<section class="card" id="B5">
+ <h2>Chứng minh chiều đảo <span class="time">· 5 phút</span></h2>
+ <p class="task">Cho đoạn thẳng <i>AB</i> và điểm <i>M</i> không thuộc <i>AB</i> sao cho <i>MA</i> = <i>MB</i>. Chứng minh <i>M</i> thuộc đường trung trực của <i>AB</i>: sắp xếp các bước (kéo thả hoặc dùng nút ▲ ▼).</p>
+ <div class="row"><div class="fig"><svg id="svgB5" viewBox="0 0 600 400" role="img" aria-label="Tam giác MAB cân tại M, O là trung điểm AB"></svg></div>
+ <div class="side"><ol class="order" id="b5list"></ol><button class="btn" id="b5chk">Kiểm tra thứ tự</button><div class="fb" id="b5fb" role="status"></div></div></div>
+</section>
+
+<section class="summary" id="summary" aria-live="polite"><h2 style="margin:0 0 8px;color:var(--key)">Bảng kết quả</h2><div class="sheet" id="sheet"></div><p id="sumText"></p><button class="btn alt" id="restart" type="button">Làm lại từ đầu</button></section>
+</div>
+<p class="sub">Bài làm được lưu ngay trong trình duyệt của thiết bị này; hoạt động không gửi dữ liệu đi đâu. Nếu đổi thiết bị hoặc xoá dữ liệu duyệt web thì bài làm sẽ mất. Kết quả không tự ghi vào bảng điểm Canvas: học sinh chụp màn hình bảng kết quả để nộp.</p>
+</main>
+<script>
+"use strict";
+const NS="http://www.w3.org/2000/svg", PX=40;
+const ang=(s)=> s.length===1 ? s+"̂" : s[0]+s[1]+"̂"+s.slice(2);
+const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
+const $=(id)=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
+function el(parent,tag,attrs,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;parent.appendChild(e);return e;}
+function svgPoint(svg,ev){const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());return{x:p.x,y:p.y};}
+function drag(svg,handle,onMove){handle.addEventListener("pointerdown",(ev)=>{ev.preventDefault();handle.setPointerCapture(ev.pointerId);const move=(e)=>onMove(svgPoint(svg,e));const up=()=>{handle.removeEventListener("pointermove",move);handle.removeEventListener("pointerup",up);handle.removeEventListener("pointercancel",up);};handle.addEventListener("pointermove",move);handle.addEventListener("pointerup",up);handle.addEventListener("pointercancel",up);});}
+function label(svg,x,y,t,fill){return el(svg,"text",{x,y,"font-size":22,"font-style":"italic","font-family":"Georgia,serif",fill:fill||"#1f2937","text-anchor":"middle"},t);}
+function tickMark(svg,p,q,n){const mx=(p.x+q.x)/2,my=(p.y+q.y)/2,L=dist(p,q),nx=-(q.y-p.y)/L,ny=(q.x-p.x)/L,tx=(q.x-p.x)/L,ty=(q.y-p.y)/L;const g=el(svg,"g",{});for(let i=0;i<n;i++){const o=(i-(n-1)/2)*5;el(g,"line",{x1:mx+tx*o-nx*8,y1:my+ty*o-ny*8,x2:mx+tx*o+nx*8,y2:my+ty*o+ny*8,stroke:"#1f2937","stroke-width":2});}return g;}
+function feedback(id,kind,msg){const f=$(id);f.className="fb show "+kind;f.textContent=msg;
+ if(kind==="hint"&&/^(Chưa|Có \d+ ô)/.test(msg)){const c=f.closest(".card");if(c&&!done[c.id]){ST.wrong[c.id]=(ST.wrong[c.id]||0)+1;}}}
+function hideFb(id){$(id).className="fb";}
+/* chuẩn hoá từ khoá: bỏ dấu, hoa/thường, khoảng trắng */
+function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();}
+function kwOk(input,accepted){const v=norm(input.value);return v.length>0 && accepted.map(norm).includes(v);}
+/* tiến độ, lưu bài, bảng kết quả */
+const done={};let TOTAL=0,TASKS={},RESET=function(){},RESTORING=false,STORE_OK=true;
+let ST={name:"",cls:"",t0:0,tend:{},wrong:{}};
+const REG={};function reg(id,o){REG[id]=o;}
+const KEY="hdh:"+document.body.dataset.key;
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function two(n){return String(n).padStart(2,"0");}
+function fmtTime(t){const d=new Date(t);return two(d.getHours())+":"+two(d.getMinutes())+" "+two(d.getDate())+"/"+two(d.getMonth()+1)+"/"+d.getFullYear();}
+function lsGet(){try{return JSON.parse(localStorage.getItem(KEY)||"null");}catch(e){return null;}}
+function lsSet(v){try{localStorage.setItem(KEY,JSON.stringify(v));return true;}catch(e){return false;}}
+function lsDel(){try{localStorage.removeItem(KEY);}catch(e){}}
+function snapshot(){const s={st:ST,done:done,snaps:{}};document.querySelectorAll(".card").forEach(c=>{const o={inputs:{},gates:{}};c.querySelectorAll("input.kw").forEach(i=>{o.inputs[i.id]=i.value;});c.querySelectorAll("[data-gate]").forEach(g=>{o.gates[g.id]=g.hidden;});if(REG[c.id])o.comp=REG[c.id].get();s.snaps[c.id]=o;});return s;}
+function save(){if(RESTORING||!ST.name)return;lsSet(snapshot());}
+let saveTimer=0;function sched(){clearTimeout(saveTimer);saveTimer=setTimeout(save,250);}
+["pointerup","click","keyup","input","change","drop"].forEach(ev=>document.addEventListener(ev,sched,true));
+window.addEventListener("pagehide",save);
+function restoreFrom(s){RESTORING=true;ST=Object.assign({name:"",cls:"",t0:0,tend:{},wrong:{}},s.st);
+ for(const k in s.done)done[k]=true;
+ document.querySelectorAll(".card").forEach(c=>{const o=s.snaps&&s.snaps[c.id];if(!o)return;
+  if(REG[c.id]&&o.comp!==undefined)REG[c.id].set(o.comp);
+  for(const id in o.inputs){const i=$(id);if(i){i.value=o.inputs[id];if(s.done[c.id]&&i.value)i.classList.add("ok");}}
+  for(const id in o.gates){const g=$(id);if(g)g.hidden=o.gates[id];}
+  if(s.done[c.id])c.classList.add("done");});
+ RESTORING=false;renderSummary();}
+function initProgress(tasks){TASKS=tasks;TOTAL=Object.keys(tasks).length;renderSummary();}
+function complete(id){const was=done[id];if(!was){done[id]=true;ST.tend[id]=Date.now();}$(id).classList.add("done");renderSummary();save();
+ if(!was&&!RESTORING&&Object.keys(done).length===TOTAL)setTimeout(()=>$("summary").scrollIntoView({block:"start"}),400);}
+function checkCode(){let h=5381;const t=ST.name+"|"+ST.cls+"|"+Object.keys(TASKS).map(k=>k+":"+(ST.tend[k]||0)+":"+(ST.wrong[k]||0)).join(",");for(let i=0;i<t.length;i++)h=((h*33)^t.charCodeAt(i))>>>0;return h.toString(36).toUpperCase().padStart(6,"0").slice(-6);}
+function renderSummary(){const ids=Object.keys(TASKS),n=ids.filter(k=>done[k]).length;
+ $("progText").textContent="Đã hoàn thành "+n+"/"+TOTAL+" nhiệm vụ";$("progBar").style.width=(TOTAL?n/TOTAL*100:0)+"%";
+ const all=n===TOTAL&&TOTAL>0;let wrong=0,last=0;ids.forEach(k=>{if(done[k]){wrong+=ST.wrong[k]||0;last=Math.max(last,ST.tend[k]||0);}});
+ let h='<div class="meta"><div><b>Họ và tên:</b> '+esc(ST.name)+'</div><div><b>Lớp:</b> '+esc(ST.cls||"—")+'</div><div><b>Hoạt động:</b> '+esc(document.querySelector("h1").textContent)+'</div><div><b>Hoàn thành lúc:</b> '+(all?fmtTime(last):"chưa xong")+'</div></div>';
+ h+='<table><thead><tr><th>STT</th><th>Nhiệm vụ</th><th>Trạng thái</th><th>Số lần chưa đúng</th><th>Xong lúc</th></tr></thead><tbody>';
+ ids.forEach((k,i)=>{h+="<tr><td>"+(i+1)+'</td><td class="l">'+esc(TASKS[k])+"</td><td>"+(done[k]?"✔ Hoàn thành":"○ Chưa xong")+"</td><td>"+(done[k]?(ST.wrong[k]||0):"–")+"</td><td>"+(done[k]?fmtTime(ST.tend[k]):"–")+"</td></tr>";});
+ h+="</tbody></table><div><b>Kết quả:</b> "+n+"/"+TOTAL+" nhiệm vụ · tổng số lần chưa đúng: "+wrong+(all?' · <b>Mã kiểm tra:</b> <span class="code">'+checkCode()+"</span>":"")+"</div>";
+ $("sheet").innerHTML=h;
+ $("sumText").textContent=all?"Em đã hoàn thành hoạt động! Hãy CHỤP MÀN HÌNH bảng kết quả ở trên (thấy rõ họ tên và mã kiểm tra) rồi nộp lên Canvas.":"Hãy hoàn thành các nhiệm vụ còn lại. Bảng kết quả sẽ đầy đủ khi xong cả "+TOTAL+" nhiệm vụ.";}
+function restartAll(){for(const k in done)delete done[k];ST.tend={};ST.wrong={};ST.t0=Date.now();document.querySelectorAll(".card").forEach(c=>c.classList.remove("done"));RESET();renderSummary();save();window.scrollTo(0,0);}
+function twoClick(btn,label,action){let t=0;const orig=btn.textContent;btn.onclick=()=>{if(t){clearTimeout(t);t=0;btn.textContent=orig;action();}else{btn.textContent=label;t=setTimeout(()=>{t=0;btn.textContent=orig;},4000);}};}
+function showApp(){$("gate").hidden=true;$("app").hidden=false;$("who").hidden=false;$("whoText").textContent="Học sinh: "+ST.name+(ST.cls?" · lớp "+ST.cls:"");}
+function showGate(){$("app").hidden=true;$("who").hidden=true;$("gate").hidden=false;$("gName").value="";$("gCls").value="";$("gErr").className="fb";$("gName").focus();}
+function boot(resetFn){RESET=resetFn;
+ try{localStorage.setItem("hdh:t","1");localStorage.removeItem("hdh:t");}catch(e){STORE_OK=false;}
+ if(!STORE_OK){$("storeWarn").hidden=false;$("newTab").href=location.href;}
+ $("gateForm").onsubmit=(e)=>{e.preventDefault();const nm=$("gName").value.trim();if(nm.length<2){$("gErr").className="fb show hint";$("gErr").textContent="Hãy nhập họ và tên (ít nhất 2 ký tự).";$("gName").focus();return;}
+  ST={name:nm,cls:$("gCls").value.trim(),t0:Date.now(),tend:{},wrong:{}};showApp();renderSummary();save();window.scrollTo(0,0);};
+ twoClick($("restart"),"Bấm lần nữa để xoá kết quả và làm lại",restartAll);
+ twoClick($("changeWho"),"Bấm lần nữa: xoá bài đã làm và đổi người",()=>{lsDel();for(const k in done)delete done[k];ST={name:"",cls:"",t0:0,tend:{},wrong:{}};document.querySelectorAll(".card").forEach(c=>c.classList.remove("done"));RESET();renderSummary();showGate();});
+ const s=lsGet();if(s&&s.st&&s.st.name){restoreFrom(s);showApp();}else showGate();}
+/* ô điền từ khoá */
+function Keyword(opts){ // opts:{input,btn,fb,accepted,good,hint,onOk,after}
+  const inp=$(opts.input);
+  $(opts.btn).onclick=()=>{
+    if(!inp.value.trim()){inp.classList.remove("ok");inp.classList.add("wrong");return feedback(opts.fb,"hint","Hãy gõ từ khoá vào ô trống.");}
+    if(kwOk(inp,opts.accepted)){inp.classList.remove("wrong");inp.classList.add("ok");feedback(opts.fb,"good",opts.good);opts.onOk&&opts.onOk();}
+    else{inp.classList.add("wrong");inp.classList.remove("ok");feedback(opts.fb,"hint",opts.hint);}
+  };
+  inp.addEventListener("keydown",(e)=>{if(e.key==="Enter"){e.preventDefault();$(opts.btn).click();}});
+  return{reset(){inp.value="";inp.classList.remove("ok","wrong");hideFb(opts.fb);}};
+}
+/* sắp xếp các bước */
+function Reorder(o){ // o:{list,steps,order,valid,btn,fb,good,hint,onOk}
+  let order=o.order.slice(),dragIdx=-1;const list=$(o.list);
+  function render(){list.innerHTML="";order.forEach((idx,pos)=>{const li=document.createElement("li");li.draggable=true;
+    const t=document.createElement("span");t.className="t";t.textContent=o.steps[idx];
+    const up=document.createElement("button");up.textContent="▲";up.setAttribute("aria-label","Đưa lên: "+o.steps[idx]);up.disabled=pos===0;
+    const dn=document.createElement("button");dn.textContent="▼";dn.setAttribute("aria-label","Đưa xuống: "+o.steps[idx]);dn.disabled=pos===order.length-1;
+    up.onclick=()=>move(pos,pos-1);dn.onclick=()=>move(pos,pos+1);li.append(t,up,dn);
+    li.addEventListener("dragstart",(e)=>{dragIdx=pos;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(pos));});
+    li.addEventListener("dragover",(e)=>{e.preventDefault();li.classList.add("over");});li.addEventListener("dragleave",()=>li.classList.remove("over"));
+    li.addEventListener("drop",(e)=>{e.preventDefault();li.classList.remove("over");if(dragIdx>=0)move(dragIdx,pos);dragIdx=-1;});
+    list.appendChild(li);});}
+  function move(a,b){if(b<0||b>=order.length||a===b)return;const[x]=order.splice(a,1);order.splice(b,0,x);render();hideFb(o.fb);}
+  $(o.btn).onclick=()=>{if(o.valid(order)){feedback(o.fb,"good",o.good);o.onOk&&o.onOk();}else feedback(o.fb,"hint","Chưa đúng. "+o.hint(order));};
+  render();
+  return{reset(){order=o.order.slice();render();hideFb(o.fb);},valid:o.valid,setOrder(x){order=x;render();},get(){return order.slice();},set(x){order=x.slice();render();}};
+}
+/* kéo thả thẻ vào ô trống */
+function Fill(o){ // o:{bank,proof,chips:[{id,t,blank}],lines:[{pre,blank,post,blank2}],btn,fb,good,hint,onOk}
+  const placed=new Array(o.chips.filter(c=>c.blank>=0).length).fill(null);let sel=null;const bank=$(o.bank),proof=$(o.proof);
+  const byId=(id)=>o.chips.find(c=>c.id===id);
+  function render(){bank.innerHTML="";proof.innerHTML="";
+    o.chips.filter(c=>!placed.includes(c.id)).forEach(c=>{const b=document.createElement("button");b.type="button";b.className="chip"+(sel===c.id?" sel":"");b.textContent=c.t;b.draggable=true;
+      b.addEventListener("click",()=>{sel=sel===c.id?null:c.id;render();});b.addEventListener("dragstart",(e)=>{e.dataTransfer.setData("text/plain",c.id);sel=c.id;});bank.appendChild(b);});
+    o.lines.forEach(ln=>{const li=document.createElement("li");const mk=(t)=>{const s=document.createElement("span");s.textContent=t;return s;};
+      if(ln.pre)li.appendChild(mk(ln.pre));
+      const addBlank=(bi)=>{const b=document.createElement("button");b.type="button";b.className="blank"+(placed[bi]?" full":"");b.dataset.blank=bi;b.textContent=placed[bi]?byId(placed[bi]).t:"(thả vào đây)";b.setAttribute("aria-label","Ô trống "+(bi+1)+(placed[bi]?": "+byId(placed[bi]).t:""));
+        b.addEventListener("click",()=>{if(placed[bi]&&!sel){placed[bi]=null;render();hideFb(o.fb);}else if(sel)putIn(bi,sel);});
+        b.addEventListener("dragover",(e)=>{e.preventDefault();b.classList.add("over");});b.addEventListener("dragleave",()=>b.classList.remove("over"));
+        b.addEventListener("drop",(e)=>{e.preventDefault();const id=e.dataTransfer.getData("text/plain");if(id)putIn(bi,id);});li.appendChild(b);};
+      if(ln.blank!=null)addBlank(ln.blank);if(ln.post)li.appendChild(mk(ln.post));if(ln.blank2!=null)addBlank(ln.blank2);if(ln.post2)li.appendChild(mk(ln.post2));proof.appendChild(li);});}
+  function putIn(bi,id){const k=placed.indexOf(id);if(k>=0)placed[k]=null;placed[bi]=id;sel=null;render();hideFb(o.fb);}
+  $(o.btn).onclick=()=>{if(placed.some(x=>!x))return feedback(o.fb,"hint","Hãy điền đủ cả "+placed.length+" ô trống.");
+    const wrong=[];placed.forEach((id,i)=>{if(byId(id).blank!==i)wrong.push(i);});
+    proof.querySelectorAll(".blank").forEach(b=>b.classList.toggle("wrong",wrong.includes(+b.dataset.blank)));
+    if(!wrong.length){feedback(o.fb,"good",o.good);o.onOk&&o.onOk();}else feedback(o.fb,"hint","Có "+wrong.length+" ô chưa đúng (viền đỏ). "+o.hint);};
+  render();
+  return{get(){return placed.slice();},set(x){x.forEach((v,i)=>{placed[i]=v;});sel=null;render();},reset(){placed.fill(null);sel=null;render();hideFb(o.fb);},placeCorrect(){o.chips.forEach(c=>{if(c.blank>=0)placed[c.blank]=c.id;});render();}};
+}
+
+
+const A={x:180,y:300},B={x:420,y:300};
+const B2=(()=>{const svg=$("svgB2");let my=150;const recs=[];const Om={x:300,y:300};
+ el(svg,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":4});el(svg,"line",{x1:300,y1:40,x2:300,y2:380,stroke:"#1b5e20","stroke-width":3});
+ el(svg,"polyline",{points:"316,300 316,284 300,284",fill:"none",stroke:"#1f2937","stroke-width":2});tickMark(svg,A,Om,2);tickMark(svg,Om,B,2);
+ [A,B,Om].forEach(p=>el(svg,"circle",{cx:p.x,cy:p.y,r:5,fill:"#1f2937"}));
+ label(svg,A.x-18,A.y+24,"A");label(svg,B.x+18,B.y+24,"B");label(svg,320,322,"O");label(svg,280,56,"d","#1b5e20");
+ const l1=el(svg,"line",{stroke:"#b5451b","stroke-width":2.5}),l2=el(svg,"line",{stroke:"#b5451b","stroke-width":2.5});
+ const M=el(svg,"circle",{cx:300,r:14,fill:"#b5451b",stroke:"#fff","stroke-width":3,tabindex:0,role:"slider","aria-label":"Điểm M trên d","aria-valuemin":40,"aria-valuemax":380,style:"cursor:ns-resize"});const lm=label(svg,0,0,"M");
+ const dists=()=>({ma:Math.hypot(300-A.x,my-A.y)/PX,mb:Math.hypot(B.x-300,my-B.y)/PX});
+ function draw(){const d=dists();M.setAttribute("cy",my);M.setAttribute("aria-valuenow",Math.round(my));lm.setAttribute("x",330);lm.setAttribute("y",my+6);
+  [[l1,A],[l2,B]].forEach(([l,P])=>{l.setAttribute("x1",P.x);l.setAttribute("y1",P.y);l.setAttribute("x2",300);l.setAttribute("y2",my);});
+  $("b2ma").textContent=fmt(d.ma,1);$("b2mb").textContent=fmt(d.mb,1);}
+ drag(svg,M,(p)=>{my=clamp(p.y,40,380);draw();});
+ M.addEventListener("keydown",(e)=>{if(e.key==="ArrowUp")my=clamp(my-8,40,380);else if(e.key==="ArrowDown")my=clamp(my+8,40,380);else return;e.preventDefault();draw();});
+ function table(){$("b2tb").innerHTML="";for(let k=0;k<3;k++){const r=recs[k];const tr=document.createElement("tr");tr.innerHTML=`<td>${k+1}</td><td>${r?fmt(r.ma,1):""}</td><td>${r?fmt(r.mb,1):""}</td>`;$("b2tb").appendChild(tr);}}
+ $("b2rec").onclick=()=>{if(recs.length>=3)return;const d=dists();
+  if(recs.some(r=>Math.abs(r.y-my)<30))return feedback("b2fb","hint","Hãy kéo M đến vị trí khác hẳn (cách các lần trước ít nhất 0,75 cm) rồi ghi tiếp.");
+  recs.push({ma:d.ma,mb:d.mb,y:my});table();hideFb("b2fb");if(recs.length===3){$("b2q").hidden=false;$("b2rec").disabled=true;feedback("b2fb","good","Đã đủ 3 lần ghi. Hãy điền từ khoá để phát biểu nhận xét.");}};
+ const kw=Keyword({input:"b2in",btn:"b2chk",fb:"b2fb",accepted:["cách đều"],good:"Đúng! Điểm nằm trên đường trung trực của một đoạn thẳng thì cách đều hai đầu mút của đoạn thẳng đó. Máy đo chỉ cho dự đoán; ở phần Chứng minh ta sẽ giải thích chắc chắn.",hint:"Chưa đúng. Nhìn bảng: MA và MB ở mỗi hàng như thế nào? Hãy dùng cụm từ gồm hai từ (cách ... ).",onOk:()=>complete("B2")});
+ table();draw();
+ return{get(){return{my,recs:recs.map(r=>({...r}))};},set(s){my=s.my;recs.length=0;s.recs.forEach(r=>recs.push(r));table();draw();if(recs.length>=3)$("b2rec").disabled=true;},reset(){my=150;recs.length=0;table();draw();$("b2q").hidden=true;$("b2rec").disabled=false;kw.reset();},setY(v){my=v;draw();},dists};})();
+
+const B3=(()=>{const svg=$("svgB3");let m={x:220,y:120};const dots=[];let good=0;const tg=el(svg,"g",{});
+ el(svg,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":4});[A,B].forEach(p=>el(svg,"circle",{cx:p.x,cy:p.y,r:5,fill:"#1f2937"}));label(svg,A.x-18,A.y+24,"A");label(svg,B.x+18,B.y+24,"B");
+ const l1=el(svg,"line",{stroke:"#b5451b","stroke-width":2}),l2=el(svg,"line",{stroke:"#b5451b","stroke-width":2});
+ const M=el(svg,"circle",{r:14,fill:"#b5451b",stroke:"#fff","stroke-width":3,tabindex:0,role:"application","aria-label":"Điểm M, kéo tự do hoặc dùng phím mũi tên",style:"cursor:grab"});const lm=label(svg,0,0,"M");
+ const dMA=()=>Math.hypot(m.x-A.x,m.y-A.y)/PX,dMB=()=>Math.hypot(m.x-B.x,m.y-B.y)/PX;
+ function draw(){M.setAttribute("cx",m.x);M.setAttribute("cy",m.y);lm.setAttribute("x",m.x+24);lm.setAttribute("y",m.y-12);
+  [[l1,A],[l2,B]].forEach(([l,P])=>{l.setAttribute("x1",P.x);l.setAttribute("y1",P.y);l.setAttribute("x2",m.x);l.setAttribute("y2",m.y);});
+  $("b3ma").textContent=fmt(dMA(),1);$("b3mb").textContent=fmt(dMB(),1);$("b3n").textContent=good;
+  if(good>=8){$("b3q").hidden=false;$("b3need").hidden=true;}}
+ function moveTo(p){m={x:clamp(p.x,20,580),y:clamp(p.y,20,380)};draw();}
+ drag(svg,M,moveTo);
+ M.addEventListener("keydown",(e)=>{const k={ArrowLeft:[-2,0],ArrowRight:[2,0],ArrowUp:[0,-4],ArrowDown:[0,4]}[e.key];if(!k)return;e.preventDefault();moveTo({x:m.x+k[0],y:m.y+k[1]});});
+ const TOL=0.1; // cm
+ $("b3mark").onclick=()=>{const d=Math.abs(dMA()-dMB());
+  if(d>TOL){feedback("b3fb0","hint","Chưa được: MA = "+fmt(dMA(),1)+" cm, MB = "+fmt(dMB(),1)+" cm. Hãy kéo M đến vị trí khác để MA bằng MB rồi đánh dấu lại.");return;}
+  if(dots.some(q=>dist(q,m)<16)){feedback("b3fb0","hint","Điểm này đã được đánh dấu gần đây. Hãy tìm vị trí khác.");return;}
+  dots.push({x:m.x,y:m.y});el(tg,"circle",{cx:m.x,cy:m.y,r:5,fill:"#2e7d32"});good++;feedback("b3fb0","good","Đúng: MA = "+fmt(dMA(),1)+" cm, MB = "+fmt(dMB(),1)+" cm. Đã có "+good+" chấm đúng.");draw();};
+ $("b3clear").onclick=()=>{tg.innerHTML="";dots.length=0;good=0;hideFb("b3fb0");draw();};
+ const kw=Keyword({input:"b3in",btn:"b3chk",fb:"b3fb",accepted:["đường trung trực","đường trung trực của đoạn thẳng ab","đường trung trực của ab"],good:"Đúng! Điểm cách đều hai mút của đoạn thẳng thì nằm trên đường trung trực của đoạn thẳng đó.",hint:"Chưa đúng. Nhìn hình dạng mà các chấm xanh tạo thành: chúng cùng nằm trên một đường nào? (gọi tên đầy đủ, ba từ)",onOk:()=>complete("B3")});
+ draw();
+ return{get(){return{m:{...m},dots:dots.map(q=>({...q}))};},set(s){m={...s.m};tg.innerHTML="";dots.length=0;good=0;s.dots.forEach(q=>{dots.push(q);el(tg,"circle",{cx:q.x,cy:q.y,r:5,fill:"#2e7d32"});good++;});draw();},reset(){$("b3clear").onclick();m={x:220,y:120};$("b3q").hidden=true;$("b3need").hidden=false;kw.reset();draw();},moveTo,mark:()=>$("b3mark").click(),get n(){return good;}};})();
+
+const B4=(()=>{const svg=$("svgB4"),Mp={x:300,y:70},Om={x:300,y:300};
+ el(svg,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":3});el(svg,"line",{x1:300,y1:40,x2:300,y2:380,stroke:"#1b5e20","stroke-width":2.5});
+ el(svg,"polyline",{points:"316,300 316,284 300,284",fill:"none",stroke:"#1f2937","stroke-width":2});tickMark(svg,A,Om,2);tickMark(svg,Om,B,2);
+ el(svg,"line",{x1:Mp.x,y1:Mp.y,x2:A.x,y2:A.y,stroke:"#1f2937","stroke-width":2.5});el(svg,"line",{x1:Mp.x,y1:Mp.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":2.5});
+ label(svg,A.x-18,A.y+24,"A");label(svg,B.x+18,B.y+24,"B");label(svg,320,322,"O");label(svg,300,Mp.y-12,"M");label(svg,276,372,"d","#1b5e20");
+ const CH=[{id:"c1",t:"OA = OB",blank:0},{id:"c2",t:ang("MOA")+" = "+ang("MOB")+" = 90°",blank:1},{id:"c3",t:"MO chung",blank:2},{id:"c4",t:"c.g.c",blank:3},{id:"c5",t:"MA = MB",blank:4},
+  {id:"d1",t:"c.c.c",blank:-1},{id:"d2",t:"g.c.g",blank:-1},{id:"d3",t:"MA = AB",blank:-1},{id:"d4",t:"MO = OA",blank:-1}];
+ const LN=[{pre:"Xét △MOA và △MOB có:"},{pre:"•",blank:0,post:"(O là trung điểm của AB)"},{pre:"•",blank:1,post:"(d ⊥ AB tại O)"},{pre:"•",blank:2},{pre:"⇒ △MOA = △MOB (",blank:3,post:")"},{pre:"Suy ra",blank:4,post:"(hai cạnh tương ứng)."}];
+ return Fill({bank:"b4bank",proof:"b4proof",chips:CH,lines:LN,btn:"b4chk",fb:"b4fb",good:"Đúng! △MOA = △MOB (c.g.c) nên MA = MB: điểm nằm trên đường trung trực của đoạn thẳng thì cách đều hai mút.",hint:"Gợi ý: c.g.c cần hai cạnh và góc xen giữa hai cạnh đó.",onOk:()=>complete("B4")});})();
+
+const B5=(()=>{const svg=$("svgB5"),Mp={x:300,y:70},Om={x:300,y:300};
+ el(svg,"line",{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":3});el(svg,"line",{x1:Mp.x,y1:Mp.y,x2:A.x,y2:A.y,stroke:"#1f2937","stroke-width":2.5});el(svg,"line",{x1:Mp.x,y1:Mp.y,x2:B.x,y2:B.y,stroke:"#1f2937","stroke-width":2.5});
+ el(svg,"line",{x1:Mp.x,y1:Mp.y,x2:Om.x,y2:Om.y,stroke:"#1f2937","stroke-width":2,"stroke-dasharray":"6 5"});tickMark(svg,A,Om,2);tickMark(svg,Om,B,2);tickMark(svg,Mp,A,1);tickMark(svg,Mp,B,1);
+ label(svg,A.x-18,A.y+24,"A");label(svg,B.x+18,B.y+24,"B");label(svg,300,322,"O");label(svg,300,Mp.y-12,"M");
+ const ST=["Gọi O là trung điểm của AB.","Xét △OMA và △OMB có:","OA = OB (O là trung điểm của AB)","MA = MB (giả thiết)","OM là cạnh chung","Suy ra △OMA = △OMB (c.c.c)","Do đó "+ang("AOM")+" = "+ang("BOM")+" (hai góc tương ứng).","Mà "+ang("AOM")+" + "+ang("BOM")+" = 180° (hai góc kề bù) nên "+ang("AOM")+" = "+ang("BOM")+" = 90°.","Vậy MO ⊥ AB tại trung điểm O của AB, hay M thuộc đường trung trực của AB."];
+ const valid=(o)=>o[0]===0&&o[1]===1&&o.slice(2,5).slice().sort().join()==="2,3,4"&&o.slice(5).join()==="5,6,7,8";
+ return Reorder({list:"b5list",steps:ST,order:[7,3,0,8,5,1,4,6,2],valid,btn:"b5chk",fb:"b5fb",good:"Đúng! Hai góc AOM và BOM bằng nhau và bù nhau nên đều bằng 90°, vậy MO ⊥ AB tại trung điểm O: M thuộc đường trung trực của AB.",
+  hint:(o)=>o[0]!==0?"Bước đầu tiên là gọi trung điểm O của AB.":(o[1]!==1?"Sau khi gọi O, hãy nêu hai tam giác sẽ xét.":"Ba điều kiện (OA = OB, MA = MB, OM chung) đứng sau câu “Xét …”; sau đó là kết luận bằng nhau, hai góc tương ứng, hai góc kề bù, rồi kết luận cuối."),onOk:()=>complete("B5")});})();
+
+initProgress({B2:"HĐ6 · Dự đoán: MA và MB khi M thuộc đường trung trực",B3:"HĐ6 · Chiều đảo: tập hợp các điểm cách đều A và B",B4:"Chứng minh chiều thuận",B5:"Chứng minh chiều đảo"});
+reg("B2",B2);reg("B3",B3);reg("B4",B4);reg("B5",B5);
+boot(()=>{B2.reset();B3.reset();B4.reset();B5.reset();});
+window.__act={B2,B3,B4,B5,done};
+
+</script>
+</body></html>
