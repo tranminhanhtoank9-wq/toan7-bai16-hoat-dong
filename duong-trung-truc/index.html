@@ -48,6 +48,11 @@ ol.order li{display:flex;align-items:center;gap:8px;padding:6px 10px;border:2px 
 ol.order li::before{content:counter(s);display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:var(--key);color:#fff;font-weight:700;font-size:.9rem}
 ol.order li .t{flex:1}
 ol.order li button{min-width:44px;min-height:44px;font-size:1.1rem;border:1px solid var(--line);background:#f1f8ee;border-radius:8px;cursor:pointer}
+.ang{position:relative;display:inline-block;font-style:italic;padding-top:.32em;line-height:1.05;margin:0 .05em}
+.ang::before,.ang::after{content:"";position:absolute;top:.2em;width:51%;border-top:1.5px solid currentColor;box-sizing:border-box}
+.ang::before{left:0;transform-origin:0 0;transform:rotate(calc(-1*var(--d)))}
+.ang::after{right:0;transform-origin:100% 0;transform:rotate(var(--d))}
+ol.order li.fixed{background:#eef2f0;border-style:solid;border-color:#cfd8d3;color:#374151;cursor:default}ol.order li.fixed .lock{margin-left:auto;font-size:16px}
 ol.order li.over{border-color:var(--or);background:#fff7e8}
 .bank{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;padding:8px;border:2px dashed var(--line);border-radius:10px;min-height:56px}
 .chip{min-height:44px;padding:4px 12px;font:inherit;border:2px solid var(--or);background:#fff7e8;color:var(--ink);border-radius:999px;cursor:grab}
@@ -127,7 +132,8 @@ ol.order li.over{border-color:var(--or);background:#fff7e8}
 <script>
 "use strict";
 const NS="http://www.w3.org/2000/svg", PX=40;
-const ang=(s)=> s.length===1 ? s+"̂" : s[0]+s[1]+"̂"+s.slice(2);
+const txt=(s)=>String(s).replace(/<[^>]*>/g,"");
+const ang=(s)=>{const n=s.length,d=Math.round(Math.atan(0.12/(0.3*n))*1800/Math.PI)/10;return '<span class="ang" role="img" aria-label="góc '+s+'" style="--d:'+d+'deg"><span aria-hidden="true">'+s+'</span></span>';};
 const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
 const $=(id)=>document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -137,7 +143,7 @@ function svgPoint(svg,ev){const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.
 function drag(svg,handle,onMove){handle.addEventListener("pointerdown",(ev)=>{ev.preventDefault();handle.setPointerCapture(ev.pointerId);const move=(e)=>onMove(svgPoint(svg,e));const up=()=>{handle.removeEventListener("pointermove",move);handle.removeEventListener("pointerup",up);handle.removeEventListener("pointercancel",up);};handle.addEventListener("pointermove",move);handle.addEventListener("pointerup",up);handle.addEventListener("pointercancel",up);});}
 function label(svg,x,y,t,fill){return el(svg,"text",{x,y,"font-size":22,"font-style":"italic","font-family":"Georgia,serif",fill:fill||"#1f2937","text-anchor":"middle"},t);}
 function tickMark(svg,p,q,n){const mx=(p.x+q.x)/2,my=(p.y+q.y)/2,L=dist(p,q),nx=-(q.y-p.y)/L,ny=(q.x-p.x)/L,tx=(q.x-p.x)/L,ty=(q.y-p.y)/L;const g=el(svg,"g",{});for(let i=0;i<n;i++){const o=(i-(n-1)/2)*5;el(g,"line",{x1:mx+tx*o-nx*8,y1:my+ty*o-ny*8,x2:mx+tx*o+nx*8,y2:my+ty*o+ny*8,stroke:"#1f2937","stroke-width":2});}return g;}
-function feedback(id,kind,msg){const f=$(id);f.className="fb show "+kind;f.textContent=msg;
+function feedback(id,kind,msg){const f=$(id);f.className="fb show "+kind;f.innerHTML=msg;
  if(kind==="hint"&&/^(Chưa|Có \d+ ô)/.test(msg)){const c=f.closest(".card");if(c&&!done[c.id]){ST.wrong[c.id]=(ST.wrong[c.id]||0)+1;}}}
 function hideFb(id){$(id).className="fb";}
 /* chuẩn hoá từ khoá: bỏ dấu, hoa/thường, khoảng trắng */
@@ -204,32 +210,36 @@ function Keyword(opts){ // opts:{input,btn,fb,accepted,good,hint,onOk,after}
   return{reset(){inp.value="";inp.classList.remove("ok","wrong");hideFb(opts.fb);}};
 }
 /* sắp xếp các bước */
-function Reorder(o){ // o:{list,steps,order,valid,btn,fb,good,hint,onOk}
-  let order=o.order.slice(),dragIdx=-1;const list=$(o.list);
-  function render(){list.innerHTML="";order.forEach((idx,pos)=>{const li=document.createElement("li");li.draggable=true;
-    const t=document.createElement("span");t.className="t";t.textContent=o.steps[idx];
-    const up=document.createElement("button");up.textContent="▲";up.setAttribute("aria-label","Đưa lên: "+o.steps[idx]);up.disabled=pos===0;
-    const dn=document.createElement("button");dn.textContent="▼";dn.setAttribute("aria-label","Đưa xuống: "+o.steps[idx]);dn.disabled=pos===order.length-1;
-    up.onclick=()=>move(pos,pos-1);dn.onclick=()=>move(pos,pos+1);li.append(t,up,dn);
-    li.addEventListener("dragstart",(e)=>{dragIdx=pos;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(pos));});
+function Reorder(o){ // o:{list,steps,order,fixed?:[stepIdx],valid,btn,fb,good,hint,onOk}  fixed = các dòng khoá sẵn (không di chuyển)
+  const fixedSet=new Set(o.fixed||[]);const slots=[];o.order.forEach((idx,pos)=>{if(!fixedSet.has(idx))slots.push(pos);});
+  let mv=o.order.filter(i=>!fixedSet.has(i)),dragPos=-1;const list=$(o.list);
+  const full=()=>{const r=o.order.slice();slots.forEach((p,k)=>{r[p]=mv[k];});return r;};
+  function render(){list.innerHTML="";const order=full();order.forEach((idx,pos)=>{const li=document.createElement("li");
+    const t=document.createElement("span");t.className="t";t.innerHTML=o.steps[idx];
+    if(fixedSet.has(idx)){li.className="fixed";const k=document.createElement("span");k.className="lock";k.textContent="🔒";k.title="Dòng này đã cố định";k.setAttribute("aria-label","Dòng cố định");li.append(t,k);list.appendChild(li);return;}
+    const mi=slots.indexOf(pos);li.draggable=true;
+    const up=document.createElement("button");up.textContent="▲";up.setAttribute("aria-label","Đưa lên: "+txt(o.steps[idx]));up.disabled=mi===0;
+    const dn=document.createElement("button");dn.textContent="▼";dn.setAttribute("aria-label","Đưa xuống: "+txt(o.steps[idx]));dn.disabled=mi===mv.length-1;
+    up.onclick=()=>move(mi,mi-1);dn.onclick=()=>move(mi,mi+1);li.append(t,up,dn);
+    li.addEventListener("dragstart",(e)=>{dragPos=mi;e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(mi));});
     li.addEventListener("dragover",(e)=>{e.preventDefault();li.classList.add("over");});li.addEventListener("dragleave",()=>li.classList.remove("over"));
-    li.addEventListener("drop",(e)=>{e.preventDefault();li.classList.remove("over");if(dragIdx>=0)move(dragIdx,pos);dragIdx=-1;});
+    li.addEventListener("drop",(e)=>{e.preventDefault();li.classList.remove("over");if(dragPos>=0)move(dragPos,mi);dragPos=-1;});
     list.appendChild(li);});}
-  function move(a,b){if(b<0||b>=order.length||a===b)return;const[x]=order.splice(a,1);order.splice(b,0,x);render();hideFb(o.fb);}
-  $(o.btn).onclick=()=>{if(o.valid(order)){feedback(o.fb,"good",o.good);o.onOk&&o.onOk();}else feedback(o.fb,"hint","Chưa đúng. "+o.hint(order));};
+  function move(a,b){if(b<0||b>=mv.length||a===b)return;const[x]=mv.splice(a,1);mv.splice(b,0,x);render();hideFb(o.fb);}
+  $(o.btn).onclick=()=>{if(o.valid(full())){feedback(o.fb,"good",o.good);o.onOk&&o.onOk();}else feedback(o.fb,"hint","Chưa đúng. "+o.hint(full()));};
   render();
-  return{reset(){order=o.order.slice();render();hideFb(o.fb);},valid:o.valid,setOrder(x){order=x;render();},get(){return order.slice();},set(x){order=x.slice();render();}};
+  return{reset(){mv=o.order.filter(i=>!fixedSet.has(i));render();hideFb(o.fb);},valid:o.valid,setOrder(x){mv=x.filter(i=>!fixedSet.has(i));render();},get(){return full();},set(x){mv=x.filter(i=>!fixedSet.has(i));render();}};
 }
 /* kéo thả thẻ vào ô trống */
 function Fill(o){ // o:{bank,proof,chips:[{id,t,blank}],lines:[{pre,blank,post,blank2}],btn,fb,good,hint,onOk}
   const placed=new Array(o.chips.filter(c=>c.blank>=0).length).fill(null);let sel=null;const bank=$(o.bank),proof=$(o.proof);
   const byId=(id)=>o.chips.find(c=>c.id===id);
   function render(){bank.innerHTML="";proof.innerHTML="";
-    o.chips.filter(c=>!placed.includes(c.id)).forEach(c=>{const b=document.createElement("button");b.type="button";b.className="chip"+(sel===c.id?" sel":"");b.textContent=c.t;b.draggable=true;
+    o.chips.filter(c=>!placed.includes(c.id)).forEach(c=>{const b=document.createElement("button");b.type="button";b.className="chip"+(sel===c.id?" sel":"");b.innerHTML=c.t;b.draggable=true;
       b.addEventListener("click",()=>{sel=sel===c.id?null:c.id;render();});b.addEventListener("dragstart",(e)=>{e.dataTransfer.setData("text/plain",c.id);sel=c.id;});bank.appendChild(b);});
-    o.lines.forEach(ln=>{const li=document.createElement("li");const mk=(t)=>{const s=document.createElement("span");s.textContent=t;return s;};
+    o.lines.forEach(ln=>{const li=document.createElement("li");const mk=(t)=>{const s=document.createElement("span");s.innerHTML=t;return s;};
       if(ln.pre)li.appendChild(mk(ln.pre));
-      const addBlank=(bi)=>{const b=document.createElement("button");b.type="button";b.className="blank"+(placed[bi]?" full":"");b.dataset.blank=bi;b.textContent=placed[bi]?byId(placed[bi]).t:"(thả vào đây)";b.setAttribute("aria-label","Ô trống "+(bi+1)+(placed[bi]?": "+byId(placed[bi]).t:""));
+      const addBlank=(bi)=>{const b=document.createElement("button");b.type="button";b.className="blank"+(placed[bi]?" full":"");b.dataset.blank=bi;b.innerHTML=placed[bi]?byId(placed[bi]).t:"(thả vào đây)";b.setAttribute("aria-label","Ô trống "+(bi+1)+(placed[bi]?": "+txt(byId(placed[bi]).t):""));
         b.addEventListener("click",()=>{if(placed[bi]&&!sel){placed[bi]=null;render();hideFb(o.fb);}else if(sel)putIn(bi,sel);});
         b.addEventListener("dragover",(e)=>{e.preventDefault();b.classList.add("over");});b.addEventListener("dragleave",()=>b.classList.remove("over"));
         b.addEventListener("drop",(e)=>{e.preventDefault();const id=e.dataTransfer.getData("text/plain");if(id)putIn(bi,id);});li.appendChild(b);};
